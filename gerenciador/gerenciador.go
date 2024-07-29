@@ -24,6 +24,7 @@ func GerenciarRequisicao(writer http.ResponseWriter, reqRecebida *http.Request) 
 	corpoReq, err := io.ReadAll(reqRecebida.Body)
 	if err != nil {
 		http.Error(writer, "Erro ao ler o corpo da requisição.", http.StatusBadRequest)
+		return
 	}
 
 	// Decodificar o json da requisição
@@ -35,7 +36,11 @@ func GerenciarRequisicao(writer http.ResponseWriter, reqRecebida *http.Request) 
 	}
 
 	// Processamento dos dados da requisição
-	dadosColetados := coletor.ColetarDados(requisicao.Desc)
+	dadosColetados, err := coletor.ColetarDados(requisicao.Desc)
+	if err != nil {
+		http.Error(writer, "Erro na coleta de dados.", http.StatusBadRequest)
+		return
+	}
 
 	// Configuração do cabeçalho da resposta para JSON
 	writer.Header().Set("Content-Type", "application/json")

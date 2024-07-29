@@ -3,7 +3,7 @@ package coletor
 import (
 	"fmt"
 	"github.com/gocolly/colly"
-	"log"
+	"net/url"
 )
 
 // Formato da resposta
@@ -15,17 +15,17 @@ type Coleta struct {
 // Função para fazer scrapping no DuckDuckGo
 // Recebe uma string para ser pesquisada
 // Devolve um objeto Coleta com os campo descrição e contexto.
-func ColetarDados(descricao string) Coleta {
+func ColetarDados(descricao string) (*Coleta, error) {
 	var dadosColetados Coleta
 	dadosColetados.Desc = descricao
 	fmt.Println("Pesquisa:", descricao)
 
-	sliceTitulos := make([]string, 10)
-	sliceDesc := make([]string, 10)
+	sliceTitulos := make([]string, 0)
+	sliceDesc := make([]string, 0)
 
 	// Instância do coletor de dados
 	coletor := colly.NewCollector(
-		colly.AllowedDomains("duckduckgo.com", "html.duckduckgo.com"),
+	// colly.AllowedDomains("html.duckduckgo.com"),
 	)
 
 	// Callback para quando um elemento com a tag <a> for encontrado
@@ -43,17 +43,23 @@ func ColetarDados(descricao string) Coleta {
 		fmt.Println("Raspagem concluída.")
 	})
 
+	coletor.OnError(func(_ *colly.Response, err error) {
+		fmt.Println("Algo deu errado:", err)
+	})
+
 	// Realiza a busca
 	searchQuery := descricao
-	searchURL := fmt.Sprintf("https://html.duckduckgo.com/html/?q=%s", searchQuery)
+	searchURL := fmt.Sprintf("https://html.duckduckgo.com/html/?q=%s&kl=br-pt", url.QueryEscape(searchQuery))
 	err := coletor.Visit(searchURL)
 	if err != nil {
-		log.Fatal(err)
+		return nil, fmt.Errorf("Erro ao visitar URL: %v", err)
 	}
+
+	coletor.Wait()
 
 	for indice, valor := range sliceTitulos {
 		dadosColetados.Contexto += "Título: " + valor + "\n"
 		dadosColetados.Contexto += "Descrição: " + sliceDesc[indice] + "\n"
 	}
-	return dadosColetados
+	return &dadosColetados, nil
 }
