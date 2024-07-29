@@ -6,18 +6,11 @@ import (
 	"net/url"
 )
 
-// Formato da resposta
-type Coleta struct {
-	Desc     string `json:"desc"`
-	Contexto string `json:"contexto"`
-}
-
 // Função para fazer scrapping no DuckDuckGo
 // Recebe uma string para ser pesquisada
 // Devolve um objeto Coleta com os campo descrição e contexto.
-func ColetarDados(descricao string) (*Coleta, error) {
-	var dadosColetados Coleta
-	dadosColetados.Desc = descricao
+func ColetarDados(descricao string) (map[string]string, error) {
+	dadosColetados := make(map[string]string)
 	fmt.Println("Pesquisa:", descricao)
 
 	sliceTitulos := make([]string, 0)
@@ -57,9 +50,8 @@ func ColetarDados(descricao string) (*Coleta, error) {
 
 	coletor.Wait()
 
-	for indice, valor := range sliceTitulos {
-		dadosColetados.Contexto += "Título: " + valor + "\n"
-		dadosColetados.Contexto += "Descrição: " + sliceDesc[indice] + "\n"
+	for indice, valor := range sliceDesc {
+		dadosColetados[sliceTitulos[indice]] = valor
 	}
-	return &dadosColetados, nil
+	return dadosColetados, nil
 }
