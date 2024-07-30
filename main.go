@@ -2,11 +2,14 @@ package main
 
 import (
 	"fmt"
-	"github.com/vitorbenites/scrapper/gerenciador"
 	"net/http"
+	"runtime"
+
+	"github.com/vitorbenites/scrapper/gerenciador"
 )
 
 func main() {
+	runtime.GOMAXPROCS(4)
 	// Função Handle
 	http.HandleFunc("/", gerenciador.GerenciarRequisicao)
 	// Inicialização do servidor

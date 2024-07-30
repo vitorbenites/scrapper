@@ -28,7 +28,6 @@ func ColetarDados(descricao string) ([]Coleta, error) {
 	)
 
 	coletor.Limit(&colly.LimitRule{
-		DomainGlob:  "*",
 		Parallelism: 5,
 		Delay:       1 * time.Second,
 	})
