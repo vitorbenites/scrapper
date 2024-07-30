@@ -24,7 +24,7 @@ func ColetarDados(descricao string) ([]Coleta, error) {
 
 	// Instância do coletor de dados
 	coletor := colly.NewCollector(
-	// colly.AllowedDomains("html.duckduckgo.com"),
+		colly.Async(true),
 	)
 
 	coletor.Limit(&colly.LimitRule{
