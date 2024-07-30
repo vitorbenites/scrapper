@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gocolly/colly"
 	"net/url"
+	"time"
 )
 
 type Coleta struct {
@@ -25,6 +26,12 @@ func ColetarDados(descricao string) ([]Coleta, error) {
 	coletor := colly.NewCollector(
 	// colly.AllowedDomains("html.duckduckgo.com"),
 	)
+
+	coletor.Limit(&colly.LimitRule{
+		DomainGlob:  "*",
+		Parallelism: 5,
+		Delay:       1 * time.Second,
+	})
 
 	// Callback para quando um elemento com a tag <a> for encontrado
 	coletor.OnHTML("a.result__a", func(e *colly.HTMLElement) {
@@ -48,9 +55,13 @@ func ColetarDados(descricao string) ([]Coleta, error) {
 	// Realiza a busca
 	searchQuery := descricao
 	searchURL := fmt.Sprintf("https://html.duckduckgo.com/html/?q=%s&kl=br-pt", url.QueryEscape(searchQuery))
-	err := coletor.Visit(searchURL)
-	if err != nil {
-		return nil, fmt.Errorf("Erro ao visitar URL: %v", err)
+	for i := 0; i < 3; i++ { // Tenta até 3 vezes
+		err := coletor.Visit(searchURL)
+		if err == nil {
+			break
+		}
+		fmt.Printf("Retrying %d/3\n", i+1)
+		time.Sleep(1 * time.Second)
 	}
 
 	coletor.Wait()
