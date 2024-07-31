@@ -23,14 +23,7 @@ func ColetarDados(descricao string) ([]Coleta, error) {
 	sliceDesc := make([]string, 0)
 
 	// Instância do coletor de dados
-	coletor := colly.NewCollector(
-		colly.Async(true),
-	)
-
-	coletor.Limit(&colly.LimitRule{
-		Parallelism: 5,
-		Delay:       1 * time.Second,
-	})
+	coletor := colly.NewCollector()
 
 	// Callback para quando um elemento com a tag <a> for encontrado
 	coletor.OnHTML("a.result__a", func(e *colly.HTMLElement) {
@@ -59,7 +52,7 @@ func ColetarDados(descricao string) ([]Coleta, error) {
 		if err == nil {
 			break
 		}
-		fmt.Printf("Retrying %d/3\n", i+1)
+		fmt.Printf("Retentativa %d/3\n", i+1)
 		time.Sleep(1 * time.Second)
 	}
 

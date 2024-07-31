@@ -2,6 +2,7 @@ package gerenciador
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/vitorbenites/scrapper/coletor"
 	"io"
 	"net/http"
@@ -36,10 +37,19 @@ func GerenciarRequisicao(writer http.ResponseWriter, reqRecebida *http.Request) 
 	}
 
 	// Processamento dos dados da requisição
-	dadosColetados, err := coletor.ColetarDados(requisicao.Desc)
-	if err != nil {
-		http.Error(writer, "Erro na coleta de dados.", http.StatusBadRequest)
-		return
+	var dadosColetados []coletor.Coleta
+	// Repete até 3x se voltar uma lista vazia
+	for i := 0; i < 3; i++ {
+		dadosColetados, err = coletor.ColetarDados(requisicao.Desc)
+		if err != nil {
+			http.Error(writer, "Erro na coleta de dados.", http.StatusBadRequest)
+			return
+		}
+		if len(dadosColetados) == 0 {
+			fmt.Printf("Lista vazia, tentando novamente %d/3\n", i)
+		} else {
+			break
+		}
 	}
 
 	// Configuração do cabeçalho da resposta para JSON
