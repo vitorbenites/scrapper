@@ -47,7 +47,7 @@ func GerenciarRequisicao(writer http.ResponseWriter, reqRecebida *http.Request) 
 			return
 		}
 		if len(dadosColetados) == 0 {
-			fmt.Printf("Lista vazia, tentando novamente %d/3\n", i+1)
+			fmt.Printf("Lista vazia, tentando novamente %d/5\n", i+1)
 			time.Sleep(1 * time.Second)
 		} else {
 			break

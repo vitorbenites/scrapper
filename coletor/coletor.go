@@ -52,7 +52,7 @@ func ColetarDados(descricao string) ([]Coleta, error) {
 		if err == nil {
 			break
 		}
-		fmt.Printf("Retentativa %d/3\n", i+1)
+		fmt.Printf("Retentativa %d/5\n", i+1)
 		time.Sleep(1 * time.Second)
 	}
 
