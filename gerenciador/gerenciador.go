@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/vitorbenites/scrapper/coletor"
+	"github.com/vitorbenites/scrapper/types"
 	"io"
 	"net/http"
 	"time"
@@ -38,7 +39,7 @@ func GerenciarRequisicao(writer http.ResponseWriter, reqRecebida *http.Request) 
 	}
 
 	// Processamento dos dados da requisição
-	var dadosColetados []coletor.Coleta
+	var dadosColetados []types.Coleta
 	// Repete até 3x se voltar uma lista vazia
 	for i := 0; i < 5; i++ {
 		dadosColetados, err = coletor.ColetarDados(requisicao.Desc)
